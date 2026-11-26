@@ -1,5 +1,5 @@
 // Keeps the tracker working offline at the gym. Bump VERSION after each update.
-const VERSION = "v1";
+const VERSION = "v2";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE))); self.skipWaiting(); });
 self.addEventListener("activate", e => {

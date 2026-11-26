@@ -252,39 +252,29 @@ const TEMPLATES = [
     {name:"Farmer's carry", type:"carry", sets:5, w:24, d:40, ss:"b"},
     {name:"Med ball slam", type:"body", sets:5, reps:12, ss:"b"},
     {name:"Bike, steady", type:"cardio", sets:1, d:"", t:"10:00", tip:"Breathing hard but able to talk."}]},
-  {key:"SA", dow:2, day:"Tue", title:"Strength A", mode:"strength", focus:"Heavy, with leg press", short:"Legs", rest:150, ex:[
+  {key:"SA", dow:2, day:"Tue", title:"Strength A", mode:"strength", focus:"Heavy: legs, lats and arms", short:"Legs", rest:150, ex:[
     L("Bench press",4,5,57.5,"","Warm up with 40 × 5 and 50 × 3 first."),
     L("Leg press",4,6,120,"","Stop at a 90° knee bend."),
     L("Lat pulldown",4,6,58),
-    L("Back extension machine",4,8,85),
     ...ARMS(27.5,32.5,4,8),
-    L("Calf raise machine",4,10,50,"","3 sec down, pause at the bottom."),
     LR(3,10)]},
-  {key:"HA", dow:3, day:"Wed", title:"Hypertrophy A", mode:"reps", focus:"Light, with hamstrings and shoulders", short:"Hams", rest:60, ex:[
+  {key:"HA", dow:3, day:"Wed", title:"Hypertrophy A", mode:"reps", focus:"Light: hamstrings, shoulders, lower back, calves", short:"Hams", rest:60, ex:[
     L("Bench press",3,12,45),
     L("Lying leg curl",3,12,45),
     L("Machine shoulder press",3,12,35),
-    L("Lat pulldown",3,12,48),
-    L("Back extension machine",3,15,65),
-    ...ARMS(22.5,22.5,3,15),
-    L("Calf raise machine",3,20,35),
+    L("Back extension machine",3,15,65,"a","Superset with calf raises."), L("Calf raise machine",3,20,35,"b"),
     LR(3,15)]},
-  {key:"SB", dow:4, day:"Thu", title:"Strength B", mode:"strength", focus:"Heavy, with hamstrings and shoulders", short:"Hams", rest:150, ex:[
+  {key:"SB", dow:4, day:"Thu", title:"Strength B", mode:"strength", focus:"Heavy: hamstrings, shoulders, lower back, calves", short:"Hams", rest:150, ex:[
     L("Bench press",4,5,57.5,"","Warm up with 40 × 5 and 50 × 3 first."),
     L("Lying leg curl",4,6,55),
     L("Machine shoulder press",4,6,45),
-    L("Lat pulldown",4,6,58),
-    L("Back extension machine",4,8,85),
-    ...ARMS(27.5,32.5,4,8),
-    L("Calf raise machine",4,10,50,"","3 sec down, pause at the bottom."),
+    L("Back extension machine",4,8,85,"a","Superset with calf raises."), L("Calf raise machine",4,10,50,"b","3 sec down, pause at the bottom."),
     LR(3,10)]},
-  {key:"HB", dow:5, day:"Fri", title:"Hypertrophy B", mode:"reps", focus:"Light, with leg press", short:"Legs", rest:60, ex:[
+  {key:"HB", dow:5, day:"Fri", title:"Hypertrophy B", mode:"reps", focus:"Light: legs, lats and arms", short:"Legs", rest:60, ex:[
     L("Bench press",3,12,45),
     L("Leg press",3,15,90,"","Stop at a 90° knee bend."),
     L("Lat pulldown",3,12,48),
-    L("Back extension machine",3,15,65),
     ...ARMS(22.5,22.5,3,15),
-    L("Calf raise machine",3,20,35),
     LR(3,15)]}
 ];
 const FIELDS = {
@@ -801,7 +791,7 @@ async function ask(q){
   const plan = TEMPLATES.map(t => `${t.day} ${t.title} (${t.mode}, ${t.focus}): ` + t.ex.map(e => e.type === "lift" ? `${e.name} ${e.sets}×${e.reps}${e.start ? " start " + e.start + " kg" : ""}` : e.name).join(", ")).join("\n");
   const log = [...sessions].sort(bySessionDesc).slice(0, 10).reverse().map(s => `${s.date} ${s.title}: ` +
     (s.exercises || []).map(e => `${e.name} ${formatSets(e)}${e.note ? " (" + e.note + ")" : ""}`).join("; ") + (s.note ? `. Note: ${s.note}` : "")).join("\n");
-  const prompt = `You are a practical strength and conditioning coach helping one athlete with their own training log. Their week from 26 November 2026: Monday cardio circuit; Tuesday Strength A; Wednesday Hypertrophy A; Thursday Strength B; Friday Hypertrophy B. The athlete wants the same short list of exercises every week: bench press, EZ-bar 21s, rope pushdown, leg press, lying leg curl, machine shoulder press, lat pulldown, back extension machine, calf raise machine, and decline leg raises to finish every day. Strength days are heavy, 4 to 8 reps with 2 to 3 min rest; hypertrophy days are lighter, 12 to 20 reps with about 1 min rest. Leg press and leg curl alternate between days; shoulder press is twice a week. Respect these exercise choices and do not suggest replacing them unless asked or pain demands it. Main goal is fat loss while keeping strength. Right knee: medial meniscus tear and a cartilage defect on the inner femoral condyle, surgery undecided; leg press only to 90 degrees. The right forearm was sore in late November. Weights are in kg. Next-session rule: if every set at the top weight hit the target reps, add 2.5 kg (5 kg on leg press, 2 kg on dumbbells, 2.5 kg less on assisted machines); otherwise repeat the weight.
+  const prompt = `You are a practical strength and conditioning coach helping one athlete with their own training log. Their week from 26 November 2026: Monday cardio circuit; Tuesday Strength A; Wednesday Hypertrophy A; Thursday Strength B; Friday Hypertrophy B. The athlete wants the same short list of exercises every week: bench press, EZ-bar 21s, rope pushdown, leg press, lying leg curl, machine shoulder press, lat pulldown, back extension machine, calf raise machine, and decline leg raises to finish every day. Strength days are heavy, 4 to 8 reps with 2 to 3 min rest; hypertrophy days are lighter, 12 to 20 reps with about 1 min rest. At most 6 exercises a day: bench press and decline leg raises every day; leg press, lat pulldown, 21s and rope pushdown on Tuesday and Friday; lying leg curl, shoulder press, back extension and calf raises on Wednesday and Thursday, so each exercise gets one heavy and one light day a week. Respect these exercise choices and do not suggest replacing them unless asked or pain demands it. Main goal is fat loss while keeping strength. Right knee: medial meniscus tear and a cartilage defect on the inner femoral condyle, surgery undecided; leg press only to 90 degrees. The right forearm was sore in late November. Weights are in kg. Next-session rule: if every set at the top weight hit the target reps, add 2.5 kg (5 kg on leg press, 2 kg on dumbbells, 2.5 kg less on assisted machines); otherwise repeat the weight.
 
 Plan:
 ${plan}
